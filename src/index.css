@@ -48,6 +48,10 @@ button:disabled {
   width: 35%;
 }
 
+.transactionStatus {
+  font-family: monospace;
+}
+
 .container {
   background-color: #202127;
   border-radius: 8px;
@@ -55,6 +59,7 @@ button:disabled {
   padding: 16px;
   margin: 16px;
   width: auto;
+  overflow: scroll;
 }
 
 .inline {

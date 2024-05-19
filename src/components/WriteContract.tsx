@@ -46,14 +46,9 @@ export function WriteContract(data: WriteContractData) {
       hash,
     })
 
-  return (
-    <div className="container">
-      <div className="stack">
-        <div className="buttonContainer">
-          <button class="transcationButton" disabled={isPending} onClick={submit}>
-            {isPending ? 'Confirming...' : 'Send'}
-          </button>
-        </div>
+  const StatusPanel = () => {
+    return (
+      <div className="container transactionStatus">
         {hash && <div>Transaction Hash: {hash}</div>}
         {isConfirming && <div>Waiting for confirmation...</div>}
         {isConfirmed && <div>Transaction confirmed.</div>}
@@ -61,6 +56,21 @@ export function WriteContract(data: WriteContractData) {
           <div>Error: {(error as BaseError).shortMessage || error.message}</div>
         )}
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="container">
+        <div className="stack">
+          <div className="buttonContainer">
+            <button class="transcationButton" disabled={isPending} onClick={submit}>
+              {isPending ? 'Confirming...' : 'Send'}
+            </button>
+          </div>
+        </div>
+      </div>
+      { (hash || isConfirming || isConfirmed || error) && <StatusPanel /> }
+    </>
   )
 }
