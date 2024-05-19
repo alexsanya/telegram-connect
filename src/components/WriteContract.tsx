@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { type BaseError, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
 import { parseAbi, toHex } from 'viem';
 
-interface WriteContractData {
+export interface WriteContractData {
   chainId: number,
   address: `0x{string}`,
   abi: string[],
@@ -11,9 +11,20 @@ interface WriteContractData {
 }
 
 
-export function WriteContract(data: WriteContractData) {
+export function WriteContract(data: WriteContractData & { callback: string }) {
   const { data: hash, error, isPending, writeContract } = useWriteContract()
   const account = useAccount()
+
+  const callback = (result: { hash?: `0x${string}`, error?: any, confirmed?: boolean }) => {
+    fetch(data.callback, {
+      mode:  'no-cors',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(result)
+    })
+  }
 
   useEffect(() => {
     if (!account.chainId) {
@@ -46,6 +57,19 @@ export function WriteContract(data: WriteContractData) {
       hash,
     })
 
+  useEffect(() => {
+    if (hash) {
+      callback({ hash })
+    }
+    if (error) {
+      callback({ error })
+    }
+    if (isConfirmed) {
+      callback({ confirmed: true })
+    }
+  }, [hash, error, isConfirmed])
+
+
   const StatusPanel = () => {
     return (
       <div className="container transactionStatus">
@@ -64,7 +88,7 @@ export function WriteContract(data: WriteContractData) {
       <div className="container">
         <div className="stack">
           <div className="buttonContainer">
-            <button class="transcationButton" disabled={isPending} onClick={submit}>
+            <button className="transcationButton" disabled={isPending} onClick={submit}>
               {isPending ? 'Confirming...' : 'Send'}
             </button>
           </div>

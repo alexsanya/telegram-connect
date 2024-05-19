@@ -1,39 +1,44 @@
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { WriteContract } from './components/WriteContract';
+import { WriteContract, WriteContractData } from './components/WriteContract';
 import { Account } from './components/Account';
 import { Connect } from './components/Connect';
 import ReactJson from 'react-json-view';
 
-const transaction = {
-  chainId: 324,
-  address: '0x493257fD37EDB34451f62EDf8D2a0C418852bA4C',
-  abi: [
-    'function approve(address spender, uint256 value)'
-  ],
-  functionName: 'approve',
-  args: [
-    '0x4a89caAE3daf3Ec08823479dD2389cE34f0E6c96',
-    456
-  ]
-}
-
 export default function App() {
   const { isConnected } = useAccount();
+  const [ transactionData, setTransactionData ] = useState<WriteContractData>();
+  const [ callbackEndpoint, setCallbackEndpoint ] = useState('');
+
+  useEffect(() => {
+    const queryParameters = new URLSearchParams(window.location.search);
+    const source = queryParameters.get("source") as string;
+    setCallbackEndpoint(queryParameters.get("callback") as string);
+    fetch(source)
+      .then(response => response.json())
+      //TODO Validate schema
+      .then(data => {
+          setTransactionData(data)
+      });
+
+  }, [])
+
   return (
     <>
       {isConnected ? <Account /> : <Connect />}
-      {isConnected &&
+      {isConnected && transactionData &&
         <>
           <div className="container">
-            <ReactJson src={transaction} collapsed theme="monokai" />
+            <ReactJson src={transactionData} collapsed theme="monokai" />
           </div>
-          <WriteContract
-            chainId={transaction.chainId}
-            address={transaction.address}
-            abi={transaction.abi}
-            functionName={transaction.functionName}
-            args={transaction.args}
-          />
+          {transactionData && <WriteContract
+            chainId={transactionData.chainId}
+            address={transactionData.address}
+            abi={transactionData.abi}
+            functionName={transactionData.functionName}
+            args={transactionData.args}
+            callback={callbackEndpoint}
+          />}
         </>
       }
     </>
