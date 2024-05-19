@@ -12,10 +12,12 @@ export default function App() {
   const [ callbackEndpoint, setCallbackEndpoint ] = useState('');
   const [ schemaError, setSchemaError ] = useState<any>(false);
   const [ callbackError, setCallbackError ] = useState<any>();
+  const [ uid, setUid ] = useState<string | undefined>();
 
   useEffect(() => {
     const queryParameters = new URLSearchParams(window.location.search);
     const source = queryParameters.get("source") as string;
+    setUid(queryParameters.get("uid") as string);
     setCallbackEndpoint(queryParameters.get("callback") as string);
     fetch(source)
       .then(response => response.json())
@@ -47,6 +49,7 @@ export default function App() {
             <ReactJson src={transactionData} collapsed theme="monokai" />
           </div>
           {transactionData && <WriteContract
+            uid={uid}
             chainId={transactionData.chainId}
             address={transactionData.address}
             abi={transactionData.abi}

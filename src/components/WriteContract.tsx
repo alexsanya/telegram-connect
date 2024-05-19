@@ -11,7 +11,13 @@ export interface WriteContractData {
 }
 
 
-export function WriteContract(data: WriteContractData & { callback: string, onCallbackError: (error: any)=>void }) {
+type WriteContractProps = WriteContractData & {
+  uid: string,
+  callback: string,
+  onCallbackError: (error: any)=>void
+}
+
+export function WriteContract(data: WriteContractProps) {
   const { data: hash, error, isPending, writeContract } = useWriteContract()
   const account = useAccount()
 
@@ -39,7 +45,10 @@ export function WriteContract(data: WriteContractData & { callback: string, onCa
         text: xhr.statusText
       });
     };
-    xhr.send(JSON.stringify(result));
+    xhr.send(JSON.stringify({
+      ...result,
+      uid: data.uid
+    }));
 
   }
 
