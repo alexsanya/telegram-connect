@@ -4,11 +4,13 @@ import { WriteContract, WriteContractData } from './components/WriteContract';
 import { Account } from './components/Account';
 import { Connect } from './components/Connect';
 import ReactJson from 'react-json-view';
+import { getSchemaError } from './utils';
 
 export default function App() {
   const { isConnected } = useAccount();
   const [ transactionData, setTransactionData ] = useState<WriteContractData>();
   const [ callbackEndpoint, setCallbackEndpoint ] = useState('');
+  const [ schemaError, setSchemaError ] = useState<any>(false);
 
   useEffect(() => {
     const queryParameters = new URLSearchParams(window.location.search);
@@ -16,17 +18,25 @@ export default function App() {
     setCallbackEndpoint(queryParameters.get("callback") as string);
     fetch(source)
       .then(response => response.json())
-      //TODO Validate schema
       .then(data => {
-          setTransactionData(data)
-      });
+          const error = getSchemaError(data)
+          if (error) {
+            setSchemaError(error)
+          } else {
+            setTransactionData(data)
+          }
+      })
+      .catch(error => {
+        setSchemaError(error)
+      })
 
   }, [])
 
   return (
     <>
-      {isConnected ? <Account /> : <Connect />}
-      {isConnected && transactionData &&
+      {isConnected && !schemaError && <Account />}
+      {!isConnected && !schemaError && <Connect />}
+      {isConnected && !schemaError && transactionData && 
         <>
           <div className="container">
             <ReactJson src={transactionData} collapsed theme="monokai" />
@@ -40,6 +50,13 @@ export default function App() {
             callback={callbackEndpoint}
           />}
         </>
+      }
+      {
+        schemaError &&
+        <div className="container parsingError">
+          <div>Source doesnt match schema</div>
+          <ReactJson src={schemaError} collapsed theme="monokai" />
+        </div>
       }
     </>
   );
