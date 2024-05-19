@@ -11,19 +11,36 @@ export interface WriteContractData {
 }
 
 
-export function WriteContract(data: WriteContractData & { callback: string }) {
+export function WriteContract(data: WriteContractData & { callback: string, onCallbackError: (error: any)=>void }) {
   const { data: hash, error, isPending, writeContract } = useWriteContract()
   const account = useAccount()
 
   const callback = (result: { hash?: `0x${string}`, error?: any, confirmed?: boolean }) => {
-    fetch(data.callback, {
-      mode:  'no-cors',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(result)
-    })
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", data.callback, true);
+    xhr.onload = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+        } else {
+          console.error(xhr.statusText);
+          data.onCallbackError({
+            status: xhr.status,
+            text: xhr.statusText
+          });
+        }
+      }
+    };
+    xhr.onerror = () => {
+      console.error(xhr.statusText);
+      data.onCallbackError({
+        status: xhr.status,
+        text: xhr.statusText
+      });
+    };
+    xhr.send(JSON.stringify(result));
+
   }
 
   useEffect(() => {

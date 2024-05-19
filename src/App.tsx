@@ -11,6 +11,7 @@ export default function App() {
   const [ transactionData, setTransactionData ] = useState<WriteContractData>();
   const [ callbackEndpoint, setCallbackEndpoint ] = useState('');
   const [ schemaError, setSchemaError ] = useState<any>(false);
+  const [ callbackError, setCallbackError ] = useState<any>();
 
   useEffect(() => {
     const queryParameters = new URLSearchParams(window.location.search);
@@ -32,6 +33,10 @@ export default function App() {
 
   }, [])
 
+  const onCallbackError = (error: any) => {
+    setCallbackError(error)
+  }
+
   return (
     <>
       {isConnected && !schemaError && <Account />}
@@ -48,6 +53,7 @@ export default function App() {
             functionName={transactionData.functionName}
             args={transactionData.args}
             callback={callbackEndpoint}
+            onCallbackError={onCallbackError}
           />}
         </>
       }
@@ -58,6 +64,14 @@ export default function App() {
           <ReactJson src={schemaError} collapsed theme="monokai" />
         </div>
       }
+      {
+        callbackError &&
+        <div className="container callbackError">
+          <div>There was an error during callback request to {callbackEndpoint}</div>
+          <ReactJson src={callbackError} collapsed theme="monokai" />
+        </div>
+      }
+
     </>
   );
 }
