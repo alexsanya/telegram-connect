@@ -70,8 +70,7 @@ export default function App() {
             primaryType={operationData.primaryType}
             types={operationData.types}
             message={operationData.message}
-            callback={callbackEndpoint}
-            onCallbackError={onCallbackError}
+            sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
           />}
 
         </>

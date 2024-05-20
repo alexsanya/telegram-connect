@@ -14,12 +14,11 @@ interface SignMessageProps {
   types: any,
   message: any,
   uid: string,
-  callback: string,
-  onCallbackError: (error: any)=>void
+  sendEvent: (event: any)=>void
 }
 
 export function SignMessage(props: SignMessageProps) {
-  const { domain, primaryType, types, message, onCallbackError } = props;
+  const { domain, primaryType, types, message, onCallbackError, sendEvent } = props;
   const { signTypedData } = useSignTypedData();
   const [ error, setError ] = useState();
   const [ hash, setHash ] = useState();
@@ -38,37 +37,6 @@ export function SignMessage(props: SignMessageProps) {
     );
   }
 
-  const callback = (result: { hash?: `0x${string}`, error?: any }) => {
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", props.callback, true);
-    xhr.onload = () => {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          console.log(xhr.responseText);
-        } else {
-          console.error(xhr.statusText);
-          onCallbackError({
-            status: xhr.status,
-            text: xhr.statusText
-          });
-        }
-      }
-    };
-    xhr.onerror = () => {
-      console.error(xhr.statusText);
-      props.onCallbackError({
-        status: xhr.status,
-        text: xhr.statusText
-      });
-    };
-    xhr.send(JSON.stringify({
-      ...result,
-      uid: props.uid
-    }));
-
-  }
-
   const StatusPanel = () => {
     return (
       <div className="container signatureStatus">
@@ -82,10 +50,10 @@ export function SignMessage(props: SignMessageProps) {
 
   useEffect(() => {
     if (hash) {
-      callback({ hash })
+      sendEvent({ hash })
     }
     if (error) {
-      callback({ error })
+      sendEvent({ error })
     }
   }, [hash, error])
 
