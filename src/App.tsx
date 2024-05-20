@@ -5,7 +5,7 @@ import { SignMessage } from './components/SignMessage';
 import { Account } from './components/Account';
 import { Connect } from './components/Connect';
 import ReactJson from 'react-json-view';
-import { getSchemaError } from './utils';
+import { getSchemaError, sendEvent } from './utils';
 
 export default function App() {
   const { isConnected } = useAccount();
@@ -62,8 +62,7 @@ export default function App() {
             abi={operationData.abi}
             functionName={operationData.functionName}
             args={operationData.args}
-            callback={callbackEndpoint}
-            onCallbackError={onCallbackError}
+            sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
           />}
           {(operationType === "signature") && operationData && uid && <SignMessage
             uid={uid}

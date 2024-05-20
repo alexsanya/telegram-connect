@@ -35,3 +35,33 @@ export const getSchemaError = (operationType: string, data: any) => {
   return null
 }
 
+export const sendEvent = (uid: string, endpoint: string, onCallbackError: () => void, result: any) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", endpoint, true);
+  xhr.onload = () => {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        console.log(xhr.responseText);
+      } else {
+        console.error(xhr.statusText);
+        onCallbackError({
+          status: xhr.status,
+          text: xhr.statusText
+        });
+      }
+    }
+  };
+  xhr.onerror = () => {
+    console.error(xhr.statusText);
+    onCallbackError({
+      status: xhr.status,
+      text: xhr.statusText
+    });
+  };
+  xhr.send(JSON.stringify({
+    ...result,
+    uid 
+  }));
+}
+
+
