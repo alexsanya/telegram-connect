@@ -35,7 +35,7 @@ export const getSchemaError = (operationType: string, data: any) => {
   return null
 }
 
-export const sendEvent = (uid: string, endpoint: string, onCallbackError: () => void, result: any) => {
+export const sendEvent = (uid: string, endpoint: string, onCallbackError: (error: any) => void, result: any) => {
   const xhr = new XMLHttpRequest();
   xhr.open("POST", endpoint, true);
   xhr.onload = () => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { WriteContract, WriteContractData } from './components/WriteContract';
-import { SignMessage } from './components/SignMessage';
+import { SignMessage, SignMessageProps } from './components/SignMessage';
 import { Account } from './components/Account';
 import { Connect } from './components/Connect';
 import ReactJson from 'react-json-view';
@@ -9,7 +9,8 @@ import { getSchemaError, sendEvent } from './utils';
 
 export default function App() {
   const { isConnected } = useAccount();
-  const [ operationData, setOperationData ] = useState<WriteContractData>();
+  const [ transactionData, setTransactionData ] = useState<WriteContractData>()
+  const [ signMessageData, setSignMessageData ] = useState<SignMessageProps>();
   const [ callbackEndpoint, setCallbackEndpoint ] = useState('');
   const [ schemaError, setSchemaError ] = useState<any>(false);
   const [ callbackError, setCallbackError ] = useState<any>();
@@ -33,7 +34,7 @@ export default function App() {
           if (error) {
             setSchemaError(error)
           } else {
-            setOperationData(data)
+            actionType === "signature" ? setSignMessageData(data) : setTransactionData(data)
           }
       })
       .catch(error => {
@@ -50,28 +51,39 @@ export default function App() {
     <>
       {isConnected && !schemaError && <Account />}
       {!isConnected && !schemaError && <Connect />}
-      {isConnected && !schemaError && operationData && 
+      {isConnected && !schemaError && (transactionData || signMessageData) && 
         <>
-          <div className="container">
-            <ReactJson src={operationData} collapsed theme="monokai" />
-          </div>
-          {(operationType === "transaction") && operationData && uid && <WriteContract
-            uid={uid}
-            chainId={operationData.chainId}
-            address={operationData.address}
-            abi={operationData.abi}
-            functionName={operationData.functionName}
-            args={operationData.args}
-            sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
-          />}
-          {(operationType === "signature") && operationData && uid && <SignMessage
-            uid={uid}
-            domain={operationData.domain}
-            primaryType={operationData.primaryType}
-            types={operationData.types}
-            message={operationData.message}
-            sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
-          />}
+          {(operationType === "transaction") && transactionData && uid &&
+          <>
+            <div className="container">
+              <ReactJson src={transactionData} collapsed theme="monokai" />
+            </div>
+            <WriteContract
+              uid={uid}
+              chainId={transactionData.chainId}
+              address={transactionData.address}
+              abi={transactionData.abi}
+              functionName={transactionData.functionName}
+              args={transactionData.args}
+              sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
+            />
+          </>
+          }
+          {(operationType === "signature") && signMessageData && uid &&
+          <>
+            <div className="container">
+              <ReactJson src={signMessageData} collapsed theme="monokai" />
+            </div>
+            <SignMessage
+              uid={uid}
+              domain={signMessageData.domain}
+              primaryType={signMessageData.primaryType}
+              types={signMessageData.types}
+              message={signMessageData.message}
+              sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
+            />
+          </>
+          }
 
         </>
       }

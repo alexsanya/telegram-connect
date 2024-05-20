@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useAccount, useSignTypedData } from 'wagmi'
+import { useSignTypedData } from 'wagmi'
 
 interface Domain {
   name: string,
   version: string,
   chainId: number,
-  verifyingContract: string
+  verifyingContract: `0x${string}`
 }
 
-interface SignMessageProps {
+export interface SignMessageProps {
   domain: Domain,
   primaryType: string,
   types: any,
@@ -18,10 +18,10 @@ interface SignMessageProps {
 }
 
 export function SignMessage(props: SignMessageProps) {
-  const { domain, primaryType, types, message, onCallbackError, sendEvent } = props;
+  const { domain, primaryType, types, message, sendEvent } = props;
   const { signTypedData } = useSignTypedData();
-  const [ error, setError ] = useState();
-  const [ hash, setHash ] = useState();
+  const [ error, setError ] = useState<any>();
+  const [ hash, setHash ] = useState<`0x${string}`>();
 
   const signFMessage = () => {
     signTypedData({
@@ -42,7 +42,7 @@ export function SignMessage(props: SignMessageProps) {
       <div className="container signatureStatus">
         {hash && <div>Signature hash: {hash}</div>}
         {error && (
-          <div>Error: {(error as BaseError).shortMessage || error.message}</div>
+          <div>Error: {error.shortMessage || error.message}</div>
         )}
       </div>
     )
