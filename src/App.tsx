@@ -48,7 +48,7 @@ export default function App() {
           <div className="container">
             <ReactJson src={transactionData} collapsed theme="monokai" />
           </div>
-          {transactionData && <WriteContract
+          {transactionData && uid && <WriteContract
             uid={uid}
             chainId={transactionData.chainId}
             address={transactionData.address}
