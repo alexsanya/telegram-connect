@@ -67,7 +67,7 @@ export default function App() {
               abi={transactionData.abi}
               functionName={transactionData.functionName}
               args={transactionData.args}
-              sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
+              sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, {...data , transaction: true })}
             />
           </>
           }
@@ -82,7 +82,7 @@ export default function App() {
               primaryType={signMessageData.primaryType}
               types={signMessageData.types}
               message={signMessageData.message}
-              sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, data)}
+              sendEvent={(data: any) => sendEvent(uid, callbackEndpoint, onCallbackError, {...data, signature: true })}
             />
           </>
           }
