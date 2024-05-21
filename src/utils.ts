@@ -38,6 +38,7 @@ export const getSchemaError = (operationType: string, data: any) => {
 export const sendEvent = (uid: string, endpoint: string, onCallbackError: (error: any) => void, result: any) => {
   const xhr = new XMLHttpRequest();
   xhr.open("POST", endpoint, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onload = () => {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
