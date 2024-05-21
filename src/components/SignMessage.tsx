@@ -50,10 +50,10 @@ export function SignMessage(props: SignMessageProps) {
 
   useEffect(() => {
     if (hash) {
-      sendEvent({ hash })
+      return sendEvent({ hash })
     }
     if (error) {
-      sendEvent({ error })
+      return sendEvent({ error })
     }
   }, [hash, error])
 

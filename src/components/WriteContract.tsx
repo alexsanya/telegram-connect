@@ -54,14 +54,15 @@ export function WriteContract(data: WriteContractProps) {
     })
 
   useEffect(() => {
+    if (isConfirmed) {
+      return sendEvent({ confirmed: true })
+    }
     if (hash) {
-      sendEvent({ hash })
+      //TODO found out why this triggered twice
+      return sendEvent({ hash })
     }
     if (error) {
-      sendEvent({ error })
-    }
-    if (isConfirmed) {
-      sendEvent({ confirmed: true })
+      return sendEvent({ error })
     }
   }, [hash, error, isConfirmed])
 
