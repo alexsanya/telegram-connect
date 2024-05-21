@@ -1,6 +1,6 @@
 import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from 'wagmi';
 
-export function Account() {
+export function Account(props: { botName: string }) {
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
   const { data: ensName } = useEnsName({ address });
@@ -30,9 +30,16 @@ export function Account() {
             </div>
           </div>
         </div>
-        <button className="button" onClick={() => disconnect()} type="button">
-          Disconnect
-        </button>
+        <div className="accountButtons">
+          <a href={`https://t.me/${props.botName}`} target="_blank">
+            <button className="backButton">
+              Back to chat
+            </button>
+          </a>
+          <button className="button" onClick={() => disconnect()} type="button">
+            Disconnect
+          </button>
+        </div>
       </div>
     </div>
   );

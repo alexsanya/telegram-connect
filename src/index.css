@@ -16,6 +16,18 @@ body {
   width: 38px;
 }
 
+.backButton {
+  margin-right: 10px;
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #1b1b1f;
+}
+
+.backButton:hover {
+  background: #ffffff;
+}
+
+
 button {
   background-color: #646cff;
   border-color: #747bff;
@@ -41,7 +53,7 @@ button:disabled {
 .buttonContainer {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 .transcationButton {

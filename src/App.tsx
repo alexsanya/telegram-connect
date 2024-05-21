@@ -16,10 +16,12 @@ export default function App() {
   const [ callbackError, setCallbackError ] = useState<any>();
   const [ uid, setUid ] = useState<string | undefined>();
   const [ operationType, setOperationType ] = useState<string>("");
+  const [ botName, setBotName ] = useState<string>("");
 
   useEffect(() => {
     const queryParameters = new URLSearchParams(window.location.search);
     const source = queryParameters.get("source") as string;
+    setBotName(queryParameters.get("botName") as string);
     setUid(queryParameters.get("uid") as string);
     setCallbackEndpoint(queryParameters.get("callback") as string);
 
@@ -49,7 +51,7 @@ export default function App() {
 
   return (
     <>
-      {isConnected && !schemaError && <Account />}
+      {isConnected && !schemaError && <Account botName={botName}/>}
       {!isConnected && !schemaError && <Connect />}
       {isConnected && !schemaError && (transactionData || signMessageData) && 
         <>
@@ -101,7 +103,6 @@ export default function App() {
           <ReactJson src={callbackError} collapsed theme="monokai" />
         </div>
       }
-
     </>
   );
 }
