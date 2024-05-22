@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useSignTypedData } from 'wagmi'
+import { useSignTypedData, useAccount } from 'wagmi'
+import { toHex } from 'viem';
 
 interface Domain {
   name: string,
@@ -22,6 +23,8 @@ export function SignMessage(props: SignMessageProps) {
   const { signTypedData } = useSignTypedData();
   const [ error, setError ] = useState<any>();
   const [ hash, setHash ] = useState<`0x${string}`>();
+
+  const account = useAccount()
 
   const signFMessage = () => {
     signTypedData({
@@ -47,6 +50,24 @@ export function SignMessage(props: SignMessageProps) {
       </div>
     )
   }
+
+  useEffect(() => {
+    if (!account.chainId) {
+      return;
+    }
+    if (account.chainId === domain.chainId) {
+      return;
+    }
+    const provider = window.ethereum;
+    if(!provider){
+      console.log("Metamask is not installed, please install!");
+    }
+    provider.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: toHex(domain.chainId) }],
+    });
+  }, [account])
+
 
   useEffect(() => {
     if (hash) {
