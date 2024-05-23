@@ -5,7 +5,7 @@ import { injected, walletConnect } from 'wagmi/connectors';
 const projectId = '3fbb6bba6f1de962d911bb5b5c9dba88';
 
 export const config = createConfig({
-  chains: [mainnet, zkSync],
+  chains: [mainnet, zkSync, polygon, arbitrum, avalanche, optimism, base],
   connectors: [injected(), walletConnect({ projectId })],
   transports: {
     [mainnet.id]: http(),

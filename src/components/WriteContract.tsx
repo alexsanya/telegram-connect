@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { type BaseError, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
-import { parseAbi, toHex } from 'viem';
+import { type BaseError, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { parseAbi } from 'viem';
 
 export interface WriteContractData {
   chainId: number,
@@ -19,25 +19,6 @@ type WriteContractProps = WriteContractData & {
 export function WriteContract(data: WriteContractProps) {
   const { sendEvent } = data;
   const { data: hash, error, isPending, writeContract } = useWriteContract()
-  const account = useAccount()
-
-
-  useEffect(() => {
-    if (!account.chainId) {
-      return;
-    }
-    if (account.chainId === data.chainId) {
-      return;
-    }
-    const provider = window.ethereum;
-    if(!provider){
-      console.log("Metamask is not installed, please install!");
-    }
-    provider.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: toHex(data.chainId) }],
-    });
-  }, [account])
 
   async function submit() {
     writeContract({
